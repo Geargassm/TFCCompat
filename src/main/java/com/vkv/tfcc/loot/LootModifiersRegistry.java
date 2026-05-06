@@ -15,6 +15,9 @@ public class LootModifiersRegistry {
     public static final RegistryObject<Codec<? extends IGlobalLootModifier>> ADD_ITEN =
             LOOT_MODIFIER_SERIALIZERS.register("add_item", AddItemModifier.CODEC);
 
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> CHEST_DROP_FIX =
+            LOOT_MODIFIER_SERIALIZERS.register("chest_drop_fix", ChestDropModifier.CODEC);
+
     public static void register(IEventBus eventBus) {
         LOOT_MODIFIER_SERIALIZERS.register(eventBus);
     }

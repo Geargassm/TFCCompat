@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# #",
+    "# #",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "tfc:mud_brick"
+    }
+  },
+  "result": {
+    "item": "minecraft:composter",
+    "count": 1
+  }
+}
