@@ -7,6 +7,8 @@
     "tfcc:copper_from_deepslate_copper_ore",
     "tfcc:granite_from_granite",
     "tfcc:stripped_hickory_log_from_stripped_dark_oak_log",
+    "tfcc:diamond_from_diamond_ore",
+    "tfcc:diamond_from_deepslate_diamond_ore",
     "tfcc:cinnabar_from_redstone_ore",
     "tfcc:dacite_from_cobblestone",
     "tfcc:silk_basalt_from_basalt",
