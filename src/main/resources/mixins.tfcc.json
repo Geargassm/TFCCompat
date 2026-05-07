@@ -7,7 +7,6 @@
     "TFCConfigMixin",
     "NutritionMixin",
     "TFCFoodDataMixin",
-    "CropBlockMixin",
     "ClimateRangeMixin"
   ],
   "client": [],
