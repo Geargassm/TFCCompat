@@ -1,9 +1,6 @@
 {
   "type": "forge:add_spawns",
-  "biomes": [
-    "#minecraft:is_ocean",
-    "#minecraft:is_river"
-  ],
+  "biomes": "#minecraft:is_ocean",
   "spawners": [
     { "type": "tfc:cod",            "weight": 10, "minCount": 3, "maxCount": 6 },
     { "type": "tfc:tropical_fish",  "weight": 8,  "minCount": 3, "maxCount": 6 },
@@ -11,7 +8,6 @@
     { "type": "tfc:jellyfish",      "weight": 6,  "minCount": 2, "maxCount": 5 },
     { "type": "tfc:isopod",         "weight": 5,  "minCount": 2, "maxCount": 4 },
     { "type": "tfc:lobster",        "weight": 5,  "minCount": 1, "maxCount": 3 },
-    { "type": "tfc:crayfish",       "weight": 6,  "minCount": 2, "maxCount": 4 },
     { "type": "tfc:horseshoe_crab", "weight": 4,  "minCount": 1, "maxCount": 3 },
     { "type": "tfc:squid",          "weight": 8,  "minCount": 2, "maxCount": 4 },
     { "type": "tfc:octopoteuthis",  "weight": 4,  "minCount": 1, "maxCount": 3 },
