@@ -4,7 +4,8 @@
   "package": "com.vkv.tfcc.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "TFCConfigMixin"
+    "TFCConfigMixin",
+    "NutritionMixin"
   ],
   "client": [],
   "injectors": {
