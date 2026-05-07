@@ -57,14 +57,16 @@ public class ModEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void onRightClickCrop(PlayerInteractEvent.RightClickBlock event) {
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
+    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         if (event.getHand() != InteractionHand.MAIN_HAND) return;
         Level level = event.getLevel();
         BlockPos pos = event.getPos();
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
+        ItemStack stack = event.getItemStack();
 
+        // Harvest fully-grown TFC crops on right-click
         if (block instanceof net.dries007.tfc.common.blocks.crop.CropBlock crop && crop.isMaxAge(state)) {
             if (!level.isClientSide()) {
                 Block.dropResources(state, level, pos, level.getBlockEntity(pos));
@@ -72,6 +74,21 @@ public class ModEvents {
             }
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
+            return;
+        }
+
+        // Restore bonemeal for vanilla/modded blocks before TFC can cancel it
+        if (stack.is(Items.BONE_MEAL)
+                && !(block instanceof net.dries007.tfc.common.blocks.crop.CropBlock)
+                && block instanceof net.minecraft.world.level.block.BonemealableBlock bonemealable
+                && bonemealable.isValidBonemealTarget(level, pos, state, level.isClientSide())) {
+            if (!level.isClientSide() && level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                bonemealable.performBonemeal(serverLevel, level.random, pos, state);
+                stack.shrink(1);
+                level.levelEvent(2005, pos, 0);
+            }
+            event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
+            event.setCanceled(true);
         }
     }
 
