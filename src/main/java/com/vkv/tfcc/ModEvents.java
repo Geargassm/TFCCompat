@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -77,10 +76,27 @@ public class ModEvents {
             return;
         }
 
-        // Restore bonemeal for vanilla/modded blocks before TFC can cancel it
-        if (stack.is(Items.BONE_MEAL)
-                && !(block instanceof net.dries007.tfc.common.blocks.crop.CropBlock)
-                && block instanceof net.minecraft.world.level.block.BonemealableBlock bonemealable
+        if (!stack.is(Items.BONE_MEAL)) return;
+
+        // TFC crops: advance growth like vanilla bonemeal does
+        if (block instanceof net.dries007.tfc.common.blocks.crop.CropBlock crop && !crop.isMaxAge(state)) {
+            if (!level.isClientSide() && level instanceof net.minecraft.server.level.ServerLevel) {
+                int maxAge = crop.getMaxAge();
+                int newAge = Math.min(state.getValue(crop.getAgeProperty()) + level.random.nextInt(3) + 2, maxAge);
+                if (level.getBlockEntity(pos) instanceof net.dries007.tfc.common.blockentities.CropBlockEntity cropBE) {
+                    cropBE.setGrowth((float) newAge / maxAge);
+                }
+                level.setBlockAndUpdate(pos, state.setValue(crop.getAgeProperty(), newAge));
+                stack.shrink(1);
+                level.levelEvent(2005, pos, 0);
+            }
+            event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
+            event.setCanceled(true);
+            return;
+        }
+
+        // Everything else (vanilla crops, grass, trees, etc.)
+        if (block instanceof net.minecraft.world.level.block.BonemealableBlock bonemealable
                 && bonemealable.isValidBonemealTarget(level, pos, state, level.isClientSide())) {
             if (!level.isClientSide() && level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                 bonemealable.performBonemeal(serverLevel, level.random, pos, state);
@@ -105,23 +121,5 @@ public class ModEvents {
         foodData.setFoodLevel(Math.min(foodData.getFoodLevel() + props.getNutrition(), 20));
     }
 
-    @SubscribeEvent
-    public static void onBonemeal(BonemealEvent event) {
-        Level level = event.getLevel();
-        BlockPos pos = event.getPos();
-        BlockState state = event.getBlock();
 
-        if (!(state.getBlock() instanceof net.dries007.tfc.common.blocks.crop.CropBlock crop)) return;
-        if (level.isClientSide()) return;
-        if (crop.isMaxAge(state)) return;
-
-        int maxAge = crop.getMaxAge();
-        int newAge = Math.min(state.getValue(crop.getAgeProperty()) + level.random.nextInt(3) + 2, maxAge);
-
-        if (level.getBlockEntity(pos) instanceof net.dries007.tfc.common.blockentities.CropBlockEntity cropBE) {
-            cropBE.setGrowth((float) newAge / maxAge);
-        }
-        level.setBlockAndUpdate(pos, state.setValue(crop.getAgeProperty(), newAge));
-        event.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
-    }
 }
