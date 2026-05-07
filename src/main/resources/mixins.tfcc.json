@@ -6,7 +6,9 @@
   "mixins": [
     "TFCConfigMixin",
     "NutritionMixin",
-    "TFCFoodDataMixin"
+    "TFCFoodDataMixin",
+    "CropBlockMixin",
+    "ClimateRangeMixin"
   ],
   "client": [],
   "injectors": {
