@@ -9,4 +9,14 @@ public class ClimateRangeMixin {
     public boolean checkBoth(int hydration, float temperature, boolean allowWiggle) {
         return true;
     }
+
+    @Overwrite(remap = false)
+    public net.dries007.tfc.util.climate.ClimateRange.Result checkTemperature(float temperature, boolean allowWiggle) {
+        return net.dries007.tfc.util.climate.ClimateRange.Result.VALID;
+    }
+
+    @Overwrite(remap = false)
+    public net.dries007.tfc.util.climate.ClimateRange.Result checkHydration(int hydration, boolean allowWiggle) {
+        return net.dries007.tfc.util.climate.ClimateRange.Result.VALID;
+    }
 }
