@@ -108,16 +108,6 @@ public class ModEvents {
         }
     }
 
-    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
-    public static void onCheckSpawn(net.minecraftforge.event.entity.living.MobSpawnEvent.CheckSpawn event) {
-        net.minecraft.resources.ResourceLocation id = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(event.getEntity().getType());
-        if (id == null || !"tfc".equals(id.getNamespace())) return;
-        if (!(event.getLevel() instanceof net.minecraft.server.level.ServerLevel serverLevel)) return;
-        if (!(serverLevel.getChunkSource().getGenerator() instanceof net.dries007.tfc.world.TFCChunkGenerator)) {
-            event.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
-        }
-    }
-
     @SubscribeEvent
     public static void onFoodEaten(LivingEntityUseItemEvent.Finish event) {
         if (!(event.getEntity() instanceof Player player)) return;
