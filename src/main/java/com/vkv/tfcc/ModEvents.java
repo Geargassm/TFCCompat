@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -72,6 +73,19 @@ public class ModEvents {
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
         }
+    }
+
+    @SubscribeEvent
+    public static void onFoodEaten(LivingEntityUseItemEvent.Finish event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (player.level().isClientSide()) return;
+        ItemStack stack = event.getItem();
+        if (!stack.isEdible()) return;
+        if (net.dries007.tfc.common.capabilities.food.FoodCapability.get(stack) != null) return;
+        net.minecraft.world.food.FoodProperties props = stack.getItem().getFoodProperties();
+        if (props == null) return;
+        net.minecraft.world.food.FoodData foodData = player.getFoodData();
+        foodData.setFoodLevel(Math.min(foodData.getFoodLevel() + props.getNutrition(), 20));
     }
 
     @SubscribeEvent
