@@ -90,10 +90,26 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onBonemeal(BonemealEvent event) {
-        if (event.getStack().is(Items.BONE_MEAL)) {
-            if (event.getResult() == net.minecraftforge.eventbus.api.Event.Result.DEFAULT) {
-                event.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
-            }
+        Level level = event.getLevel();
+        if (level.isClientSide()) return;
+
+        BlockPos pos = event.getPos();
+        BlockState state = event.getBlock();
+
+        if (!(state.getBlock() instanceof net.dries007.tfc.common.blocks.crop.CropBlock crop)) return;
+
+        if (crop.isMaxAge(state)) {
+            event.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
+            return;
         }
+
+        if (level.getBlockEntity(pos) instanceof net.dries007.tfc.common.blockentities.CropBlockEntity cropBE) {
+            float newGrowth = Math.min(1.0f, cropBE.getGrowth() + 0.25f);
+            cropBE.setGrowth(newGrowth);
+            int newAge = Math.min((int)(newGrowth * crop.getMaxAge()), crop.getMaxAge());
+            level.setBlockAndUpdate(pos, state.setValue(crop.getAgeProperty(), newAge));
+        }
+
+        event.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
     }
 }
