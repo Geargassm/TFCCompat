@@ -1,5 +1,7 @@
 package com.vkv.tfcc;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownEgg;
@@ -8,6 +10,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -49,6 +53,24 @@ public class ModEvents {
             } else {
                 event.setCancellationResult(InteractionResult.SUCCESS);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRightClickCrop(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getHand() != InteractionHand.MAIN_HAND) return;
+        Level level = event.getLevel();
+        BlockPos pos = event.getPos();
+        BlockState state = level.getBlockState(pos);
+        Block block = state.getBlock();
+
+        if (block instanceof net.dries007.tfc.common.blocks.crop.CropBlock crop && crop.isMaxAge(state)) {
+            if (!level.isClientSide()) {
+                Block.dropResources(state, level, pos, level.getBlockEntity(pos));
+                level.setBlockAndUpdate(pos, state.setValue(crop.getAgeProperty(), 0));
+            }
+            event.setCanceled(true);
+            event.setCancellationResult(InteractionResult.SUCCESS);
         }
     }
 
