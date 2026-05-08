@@ -59,7 +59,7 @@ public class ModEvents {
     @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         if (event.getHand() != InteractionHand.MAIN_HAND) return;
-        if (!event.getItemStack().is(Items.BONE_MEAL)) return;
+        if (!(event.getItemStack().getItem() instanceof net.minecraft.world.item.BoneMealItem)) return;
 
         Level level = event.getLevel();
         BlockPos pos = event.getPos();
