@@ -8,8 +8,7 @@
     "NutritionMixin",
     "TFCFoodDataMixin",
     "ClimateRangeMixin",
-    "CropBlockEntityMixin",
-    "CropBlockMixin"
+    "CropBlockEntityMixin"
   ],
   "client": [],
   "injectors": {
