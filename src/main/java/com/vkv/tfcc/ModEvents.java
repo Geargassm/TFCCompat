@@ -10,7 +10,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
@@ -59,32 +58,14 @@ public class ModEvents {
     @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         if (event.getHand() != InteractionHand.MAIN_HAND) return;
-        ItemStack stack = event.getItemStack();
+        if (!event.getItemStack().is(Items.BONE_MEAL)) return;
+
         Level level = event.getLevel();
         BlockPos pos = event.getPos();
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
 
-        boolean isTFCCrop = block instanceof net.dries007.tfc.common.blocks.crop.CropBlock;
-        boolean isBoneMeal = stack.is(Items.BONE_MEAL);
-        if (!isTFCCrop && !isBoneMeal) return;
-
-        net.dries007.tfc.common.blocks.crop.CropBlock crop = isTFCCrop
-                ? (net.dries007.tfc.common.blocks.crop.CropBlock) block : null;
-
-        if (crop != null && crop.isMaxAge(state)) {
-            if (!level.isClientSide()) {
-                Block.dropResources(state, level, pos, level.getBlockEntity(pos));
-                level.setBlockAndUpdate(pos, state.setValue(crop.getAgeProperty(), 0));
-            }
-            event.setCanceled(true);
-            event.setCancellationResult(InteractionResult.SUCCESS);
-            return;
-        }
-
-        if (!isBoneMeal) return;
-
-        if (crop != null && !crop.isMaxAge(state)) {
+        if (block instanceof net.dries007.tfc.common.blocks.crop.CropBlock crop && !crop.isMaxAge(state)) {
             if (!level.isClientSide() && level instanceof net.minecraft.server.level.ServerLevel) {
                 int maxAge = crop.getMaxAge();
                 int newAge = Math.min(state.getValue(crop.getAgeProperty()) + level.random.nextInt(3) + 2, maxAge);
@@ -92,7 +73,7 @@ public class ModEvents {
                     cropBE.setGrowth((float) newAge / maxAge);
                 }
                 level.setBlockAndUpdate(pos, state.setValue(crop.getAgeProperty(), newAge));
-                stack.shrink(1);
+                event.getItemStack().shrink(1);
                 level.levelEvent(2005, pos, 0);
             }
             event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
@@ -104,7 +85,7 @@ public class ModEvents {
                 && bonemealable.isValidBonemealTarget(level, pos, state, level.isClientSide())) {
             if (!level.isClientSide() && level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                 bonemealable.performBonemeal(serverLevel, level.random, pos, state);
-                stack.shrink(1);
+                event.getItemStack().shrink(1);
                 level.levelEvent(2005, pos, 0);
             }
             event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
