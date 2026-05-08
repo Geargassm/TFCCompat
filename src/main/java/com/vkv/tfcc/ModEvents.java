@@ -59,14 +59,20 @@ public class ModEvents {
     @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         if (event.getHand() != InteractionHand.MAIN_HAND) return;
+        ItemStack stack = event.getItemStack();
         Level level = event.getLevel();
         BlockPos pos = event.getPos();
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
-        ItemStack stack = event.getItemStack();
 
-        // Harvest fully-grown TFC crops on right-click
-        if (block instanceof net.dries007.tfc.common.blocks.crop.CropBlock crop && crop.isMaxAge(state)) {
+        boolean isTFCCrop = block instanceof net.dries007.tfc.common.blocks.crop.CropBlock;
+        boolean isBoneMeal = stack.is(Items.BONE_MEAL);
+        if (!isTFCCrop && !isBoneMeal) return;
+
+        net.dries007.tfc.common.blocks.crop.CropBlock crop = isTFCCrop
+                ? (net.dries007.tfc.common.blocks.crop.CropBlock) block : null;
+
+        if (crop != null && crop.isMaxAge(state)) {
             if (!level.isClientSide()) {
                 Block.dropResources(state, level, pos, level.getBlockEntity(pos));
                 level.setBlockAndUpdate(pos, state.setValue(crop.getAgeProperty(), 0));
@@ -76,10 +82,9 @@ public class ModEvents {
             return;
         }
 
-        if (!stack.is(Items.BONE_MEAL)) return;
+        if (!isBoneMeal) return;
 
-        // TFC crops: advance growth like vanilla bonemeal does
-        if (block instanceof net.dries007.tfc.common.blocks.crop.CropBlock crop && !crop.isMaxAge(state)) {
+        if (crop != null && !crop.isMaxAge(state)) {
             if (!level.isClientSide() && level instanceof net.minecraft.server.level.ServerLevel) {
                 int maxAge = crop.getMaxAge();
                 int newAge = Math.min(state.getValue(crop.getAgeProperty()) + level.random.nextInt(3) + 2, maxAge);
@@ -95,7 +100,6 @@ public class ModEvents {
             return;
         }
 
-        // Everything else (vanilla crops, grass, trees, etc.)
         if (block instanceof net.minecraft.world.level.block.BonemealableBlock bonemealable
                 && bonemealable.isValidBonemealTarget(level, pos, state, level.isClientSide())) {
             if (!level.isClientSide() && level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
