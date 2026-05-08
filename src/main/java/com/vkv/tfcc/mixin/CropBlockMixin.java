@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = "net.dries007.tfc.common.blocks.crop.CropBlock", remap = false)
 public class CropBlockMixin {
 
-    @Inject(method = "randomTick", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "m_60487_", at = @At("HEAD"), cancellable = true, remap = false)
     private void tfccompat$randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
         net.dries007.tfc.common.blocks.crop.CropBlock crop =
                 (net.dries007.tfc.common.blocks.crop.CropBlock) state.getBlock();
