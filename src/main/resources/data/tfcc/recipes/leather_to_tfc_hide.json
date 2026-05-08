@@ -3,5 +3,5 @@
   "ingredients": [
     {"item": "minecraft:leather"}
   ],
-  "result": {"item": "tfc:hide/large", "count": 1}
+  "result": {"item": "tfc:large_raw_hide", "count": 1}
 }
