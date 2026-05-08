@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -91,6 +92,15 @@ public class ModEvents {
             }
             event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
             event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onBonemeal(BonemealEvent event) {
+        if (event.getStack().is(Items.BONE_MEAL)) {
+            if (event.getResult() == net.minecraftforge.eventbus.api.Event.Result.DEFAULT) {
+                event.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
+            }
         }
     }
 
