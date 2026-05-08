@@ -59,17 +59,14 @@ public class ModEvents {
     @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         if (event.getHand() != InteractionHand.MAIN_HAND) return;
+        if (!(event.getItemStack().getItem() instanceof net.minecraft.world.item.BoneMealItem)) return;
 
         Level level = event.getLevel();
         BlockPos pos = event.getPos();
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
-        ItemStack stack = event.getItemStack();
 
-        // TFC crops: any BoneMealItem advances growth manually since TFC crops aren't BonemealableBlock
-        if (block instanceof net.dries007.tfc.common.blocks.crop.CropBlock crop
-                && !crop.isMaxAge(state)
-                && stack.getItem() instanceof net.minecraft.world.item.BoneMealItem) {
+        if (block instanceof net.dries007.tfc.common.blocks.crop.CropBlock crop && !crop.isMaxAge(state)) {
             if (!level.isClientSide() && level instanceof net.minecraft.server.level.ServerLevel) {
                 int maxAge = crop.getMaxAge();
                 int newAge = Math.min(state.getValue(crop.getAgeProperty()) + level.random.nextInt(3) + 2, maxAge);
@@ -77,7 +74,7 @@ public class ModEvents {
                     cropBE.setGrowth((float) newAge / maxAge);
                 }
                 level.setBlockAndUpdate(pos, state.setValue(crop.getAgeProperty(), newAge));
-                stack.shrink(1);
+                event.getItemStack().shrink(1);
                 level.levelEvent(2005, pos, 0);
             }
             event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
@@ -85,22 +82,14 @@ public class ModEvents {
             return;
         }
 
-        // BonemealableBlocks: intercept before TFC cancels, let the item's own useOn run
-        // This handles vanilla bone meal, modded fertilizers, anything — no item type filtering
-        if (stack.isEmpty()) return;
-        if (!(block instanceof net.minecraft.world.level.block.BonemealableBlock bonemealable)) return;
-        if (!bonemealable.isValidBonemealTarget(level, pos, state, level.isClientSide())) return;
-
-        if (!level.isClientSide() && level instanceof net.minecraft.server.level.ServerLevel) {
-            net.minecraft.world.item.context.UseOnContext ctx = new net.minecraft.world.item.context.UseOnContext(
-                    level, event.getEntity(), event.getHand(), stack, event.getHitVec());
-            InteractionResult result = stack.useOn(ctx);
-            if (result != InteractionResult.PASS) {
-                event.setCancellationResult(result);
-                event.setCanceled(true);
+        if (block instanceof net.minecraft.world.level.block.BonemealableBlock bonemealable
+                && bonemealable.isValidBonemealTarget(level, pos, state, level.isClientSide())) {
+            if (!level.isClientSide() && level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                bonemealable.performBonemeal(serverLevel, level.random, pos, state);
+                event.getItemStack().shrink(1);
+                level.levelEvent(2005, pos, 0);
             }
-        } else {
-            event.setCancellationResult(InteractionResult.sidedSuccess(true));
+            event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
             event.setCanceled(true);
         }
     }
