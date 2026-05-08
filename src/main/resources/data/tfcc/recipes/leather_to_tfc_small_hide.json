@@ -1,0 +1,5 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [{"item": "minecraft:leather"}],
+  "result": {"item": "tfc:small_raw_hide", "count": 1}
+}
