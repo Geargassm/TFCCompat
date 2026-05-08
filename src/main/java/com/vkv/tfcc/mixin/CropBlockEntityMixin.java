@@ -20,6 +20,9 @@ public class CropBlockEntityMixin {
     @Inject(method = "serverTick", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
     private static void tfccompat$serverTick(Level level, BlockPos pos, BlockState state,
             net.dries007.tfc.common.blockentities.CropBlockEntity entity, CallbackInfo ci) {
+        net.dries007.tfc.common.blocks.crop.CropBlock crop =
+                (net.dries007.tfc.common.blocks.crop.CropBlock) state.getBlock();
+        if (crop.isMaxAge(state)) return; // let TFC run at max age — handles pumpkin/melon fruit placement
         ci.cancel();
         tfccompat$doGrow(level, pos, state, entity);
     }
@@ -27,6 +30,9 @@ public class CropBlockEntityMixin {
     @Inject(method = "serverTickBottomPartOnly", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
     private static void tfccompat$serverTickDouble(Level level, BlockPos pos, BlockState state,
             net.dries007.tfc.common.blockentities.CropBlockEntity entity, CallbackInfo ci) {
+        net.dries007.tfc.common.blocks.crop.CropBlock crop =
+                (net.dries007.tfc.common.blocks.crop.CropBlock) state.getBlock();
+        if (crop.isMaxAge(state)) return;
         ci.cancel();
         tfccompat$doGrow(level, pos, state, entity);
     }
@@ -35,7 +41,6 @@ public class CropBlockEntityMixin {
             net.dries007.tfc.common.blockentities.CropBlockEntity entity) {
         net.dries007.tfc.common.blocks.crop.CropBlock crop =
                 (net.dries007.tfc.common.blocks.crop.CropBlock) state.getBlock();
-        if (crop.isMaxAge(state)) return;
         if (level.random.nextInt(1200) != 0) return;
         int maxAge = crop.getMaxAge();
         int newAge = Math.min(state.getValue(crop.getAgeProperty()) + 1, maxAge);
