@@ -13,6 +13,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -21,6 +23,28 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = TFCCompat.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ModEvents {
+
+    private static boolean tfcConfigPatched = false;
+
+    @SubscribeEvent
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.START || tfcConfigPatched) return;
+        tfcConfigPatched = true;
+        try {
+            Object cfg = net.dries007.tfc.config.TFCConfig.SERVER;
+            for (String name : new String[]{
+                    "enableCollapse", "enableLandslides",
+                    "enableCollapseExplosionTrigger", "enableChiselCollapse"}) {
+                try {
+                    java.lang.reflect.Field f = cfg.getClass().getDeclaredField(name);
+                    f.setAccessible(true);
+                    ((ForgeConfigSpec.BooleanValue) f.get(cfg)).set(false);
+                } catch (NoSuchFieldException ignored) {}
+            }
+        } catch (Exception e) {
+            TFCCompat.LOGGER.warn("[TFCCompat] Could not force TFC collapse config: {}", e.getMessage());
+        }
+    }
 
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
