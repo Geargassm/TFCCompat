@@ -33,8 +33,8 @@ public class ModEvents {
         try {
             Object cfg = net.dries007.tfc.config.TFCConfig.SERVER;
             for (String name : new String[]{
-                    "enableCollapse", "enableLandslides",
-                    "enableCollapseExplosionTrigger", "enableChiselCollapse"}) {
+                    "enableBlockCollapsing", "enableExplosionCollapsing",
+                    "enableBlockLandslides", "enableChiselsStartCollapses"}) {
                 try {
                     java.lang.reflect.Field f = cfg.getClass().getDeclaredField(name);
                     f.setAccessible(true);
