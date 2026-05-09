@@ -42,7 +42,7 @@ public class ModEvents {
                 } catch (NoSuchFieldException ignored) {}
             }
         } catch (Exception e) {
-            TFCCompat.LOGGER.warn("[TFCCompat] Could not force TFC collapse config: {}", e.getMessage());
+            org.apache.logging.log4j.LogManager.getLogger().warn("[TFCCompat] Could not force TFC collapse config: {}", e.getMessage());
         }
     }
 
