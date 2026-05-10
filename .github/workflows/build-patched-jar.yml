@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - claude/apply-patch-9S4ox
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
