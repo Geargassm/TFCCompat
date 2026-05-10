@@ -1,0 +1,35 @@
+name: Build patched jar
+
+on:
+  push:
+    branches:
+      - claude/apply-patch-9S4ox
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout patch branch
+        uses: actions/checkout@v4
+        with:
+          ref: claude/apply-patch-9S4ox
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build jar
+        run: ./gradlew clean build --no-daemon
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfcc-patched-jar
+          path: build/libs/*.jar
