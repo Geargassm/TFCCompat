@@ -208,11 +208,11 @@ public class TFCCGlobalLootModifiersProvider extends GlobalLootModifierProvider 
         }, TFCItems.GRADED_ORES.get(Ore.NATIVE_COPPER).get(Ore.Grade.NORMAL).get()));
 
         //Diamond
-        add("cinnabar_from_redstone_ore", new AddItemModifier(new LootItemCondition[]{
+        add("diamond_from_diamond_ore", new AddItemModifier(new LootItemCondition[]{
                 LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.DIAMOND_ORE).build(),
                 InvertedLootItemCondition.invert(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.Ints.atLeast(1))))).build()
         }, TFCItems.ORES.get(Ore.DIAMOND).get()));
-        add("cinnabar_from_deepslate_redstone_ore", new AddItemModifier(new LootItemCondition[]{
+        add("diamond_from_deepslate_diamond_ore", new AddItemModifier(new LootItemCondition[]{
                 LootItemBlockStatePropertyCondition.hasBlockStateProperties(Blocks.DEEPSLATE_DIAMOND_ORE).build(),
                 InvertedLootItemCondition.invert(MatchTool.toolMatches(ItemPredicate.Builder.item().hasEnchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, MinMaxBounds.Ints.atLeast(1))))).build()
         }, TFCItems.ORES.get(Ore.DIAMOND).get()));

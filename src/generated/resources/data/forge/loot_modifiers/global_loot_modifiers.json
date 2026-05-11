@@ -1,5 +1,6 @@
 {
   "entries": [
+    "tfcc:chest_drop_fix",
     "tfcc:silk_andesite_from_andesite",
     "tfcc:magnetite_from_deepslate_iron_ore",
     "tfcc:willow_wood_from_mangrove_wood",
@@ -7,6 +8,8 @@
     "tfcc:copper_from_deepslate_copper_ore",
     "tfcc:granite_from_granite",
     "tfcc:stripped_hickory_log_from_stripped_dark_oak_log",
+    "tfcc:diamond_from_diamond_ore",
+    "tfcc:diamond_from_deepslate_diamond_ore",
     "tfcc:cinnabar_from_redstone_ore",
     "tfcc:dacite_from_cobblestone",
     "tfcc:silk_basalt_from_basalt",
